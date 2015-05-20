@@ -10,6 +10,9 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
@@ -95,6 +98,7 @@ public class ActionScan extends FgActionAdapter {
                 multipart.addFilePart("file1", uploadFile1);
 
                 List<String> response = multipart.finish();
+                
 
                 System.out.println("SERVER REPLIED:");
 
@@ -105,5 +109,6 @@ public class ActionScan extends FgActionAdapter {
                 System.err.println(ex);
             }
         }
+        
     }
 }
