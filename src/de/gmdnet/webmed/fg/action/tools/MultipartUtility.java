@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.gmdnet.webmed.fg.action;
+package de.gmdnet.webmed.fg.action.tools;
 
 import java.io.BufferedReader;
  
