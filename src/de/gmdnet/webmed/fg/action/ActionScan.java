@@ -18,7 +18,6 @@ import java.lang.String;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,36 +46,36 @@ public class ActionScan extends FgActionAdapter {
     private static String Parent;
     private static String uploadDir;
     private static String filePath;
+    private static String tempDir;
+    private static String nameFile;
 
     public ActionScan() {
-        registerActionMethod("Scan", new String[]{"Servlet", "pathFileTarget", "dateFileTarget"});
+        registerActionMethod("Scan", new String[]{"Servlet", "tempDir", "nameFile", "pathFileTarget", "dateFileTarget"});
     }
 
     public void methodScan(Hashtable<String, String> inputData, FgComponent requestingElement) throws SAXException, TransformerConfigurationException, TransformerException, ParserConfigurationException {
         try {
             Servlet = parseParam(inputData, "Servlet");
+            tempDir = parseParam(inputData, "tempDir");
+            nameFile = parseParam(inputData, "nameFile");
             String pathFile = (String) inputData.get("pathFileTarget");
             String dateFile = (String) inputData.get("dateFileTarget");
 
 //            Servlet = "http://localhost:8080/NMCLUploadArchivoServlet/uploadFile";
 //            String pathFile = "PATH_FILE";
 //            String dateFile = "DATE_FILE";
-
-            //            Source source = SourceManager.instance().getDefaultSource();
+//            tempDir = "C:\\destino\\";
+//            nameFile= "test11";
+            
             Source source = SourceManager.instance().selectSourceUI();
             source.setUIEnabled(false);
             source.open();
             source.acquireImage();
-//                        targetFile = (File)image;
-            tempFile = source.saveLastAcquiredImageIntoTemporaryFile();
-            imprimir(tempFile);
-//            BufferedImage image = source.acquireImageAsBufferedImage();
-//            ImageIO.write(image, "png", new File("C:\\destino\\test3.png"));
-//            filePath = "C:\\destino\\test3.png";
+            source.saveLastAcquiredImageIntoFile(tempDir + nameFile + ".png");
+            tempFile = new File(tempDir + nameFile + ".png");
             SaveImage sv = new SaveImage();
-            imprimir("pase por aquí");
             sv.enviarImagen(Servlet, tempFile, pathFile, dateFile);
-            imprimir("pase por aquí");
+            tempFile.delete();
             source.close();
         } catch (Exception e) {
             e.printStackTrace();
