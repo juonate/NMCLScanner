@@ -10,7 +10,6 @@ import de.gmdnet.webmed.fg.action.tools.MultipartUtility;
 import de.gmdnet.webmed.fg.FgComponent;
 import de.gmdnet.webmed.internal.LoggerNames;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,7 +17,6 @@ import java.lang.String;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,32 +48,35 @@ public class ActionScan extends FgActionAdapter {
     private static String nameFile;
 
     public ActionScan() {
-        registerActionMethod("Scan", new String[]{"Servlet", "tempDir", "nameFile", "pathFileTarget", "dateFileTarget"});
+        registerActionMethod("Scan", new String[]{"Servlet", "tempDir", "nameFile", "pathFileTarget", "dateFileTarget", "tempFilePath"});
     }
 
     public void methodScan(Hashtable<String, String> inputData, FgComponent requestingElement) throws SAXException, TransformerConfigurationException, TransformerException, ParserConfigurationException {
         try {
-            Servlet = parseParam(inputData, "Servlet");
-            tempDir = parseParam(inputData, "tempDir");
-            nameFile = parseParam(inputData, "nameFile");
-            String pathFile = (String) inputData.get("pathFileTarget");
-            String dateFile = (String) inputData.get("dateFileTarget");
+//            Servlet = parseParam(inputData, "Servlet");
+//            tempDir = parseParam(inputData, "tempDir");
+//            nameFile = parseParam(inputData, "nameFile");
+//            String pathFile = (String) inputData.get("pathFileTarget");
+//            String dateFile = (String) inputData.get("dateFileTarget");
+//            String tempFilePath = (String) inputData.get("tempFilePath");
 
-//            Servlet = "http://localhost:8080/NMCLUploadArchivoServlet/uploadFile";
-//            String pathFile = "PATH_FILE";
-//            String dateFile = "DATE_FILE";
-//            tempDir = "C:\\destino\\";
-//            nameFile= "test11";
+            Servlet = "http://localhost:8080/NMCLUploadArchivoServlet/uploadFile";
+            String pathFile = "PAT_FILE";
+            String dateFile = "DATE_FILE";
+            String tempFilePath = "PATH_FILE_LOCAL";
+            tempDir = "C:\\destino\\";
+            nameFile= "test901";
             
             Source source = SourceManager.instance().selectSourceUI();
+            imprimir(SourceManager.instance().getJTwainDLLVersion());
             source.setUIEnabled(false);
             source.open();
             source.acquireImage();
             source.saveLastAcquiredImageIntoFile(tempDir + nameFile + ".png");
             tempFile = new File(tempDir + nameFile + ".png");
             SaveImage sv = new SaveImage();
-            sv.enviarImagen(Servlet, tempFile, pathFile, dateFile);
-            tempFile.delete();
+            sv.enviarImagen(Servlet, tempFile, pathFile, dateFile, tempFilePath);
+//            tempFile.delete();
             source.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,15 +87,15 @@ public class ActionScan extends FgActionAdapter {
         System.out.println(o);
     }
 
-//    public static void main(String args[]) throws SAXException, TransformerConfigurationException, TransformerException, ParserConfigurationException {
-//        ActionScan scan = new ActionScan();
-//        scan.methodScan(null, null);
-//    }
+    public static void main(String args[]) throws SAXException, TransformerConfigurationException, TransformerException, ParserConfigurationException {
+        ActionScan scan = new ActionScan();
+        scan.methodScan(null, null);
+    }
     public class SaveImage {
 
         static final int BUFFER_SIZE = 16384;
 
-        public void enviarImagen(String Servlet, File file, String pathFile, String dateFile) throws MalformedURLException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
+        public void enviarImagen(String Servlet, File file, String pathFile, String dateFile, String tempFilePath) throws MalformedURLException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
             String charset = "UTF-8";
             String requestURL = Servlet;
             String xmlResponse = null;
@@ -119,12 +120,14 @@ public class ActionScan extends FgActionAdapter {
                 String rutaArchivo = rutaList.item(0).getChildNodes().item(0).getNodeValue();
                 imprimir(fechaArchivo + " " + rutaArchivo);
 
-                getForm().setValue(pathFile, rutaArchivo);
-                getForm().setValue(dateFile, fechaArchivo);
+//                getForm().setValue(pathFile, rutaArchivo);
+//                getForm().setValue(dateFile, fechaArchivo);
+//                getForm().setValue(tempFilePath, tempFile.getAbsolutePath());
 
             } catch (IOException ex) {
                 System.err.println(ex);
             }
         }
     }
+
 }
