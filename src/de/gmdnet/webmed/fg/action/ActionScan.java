@@ -48,25 +48,28 @@ public class ActionScan extends FgActionAdapter {
     private static String nameFile;
 
     public ActionScan() {
-        registerActionMethod("Scan", new String[]{"Servlet", "tempDir", "nameFile", "pathFileTarget", "dateFileTarget", "tempFilePath"});
+        registerActionMethod("Scan", new String[]{"Servlet", "tempDir", "nameFile", "pathFileTarget", "dateFileTarget", "tempFilePath", "uploadDir"});
     }
 
     public void methodScan(Hashtable<String, String> inputData, FgComponent requestingElement) throws SAXException, TransformerConfigurationException, TransformerException, ParserConfigurationException {
         try {
-//            Servlet = parseParam(inputData, "Servlet");
-//            tempDir = parseParam(inputData, "tempDir");
-//            nameFile = parseParam(inputData, "nameFile");
-//            String pathFile = (String) inputData.get("pathFileTarget");
-//            String dateFile = (String) inputData.get("dateFileTarget");
-//            String tempFilePath = (String) inputData.get("tempFilePath");
-
+            /*Servlet = parseParam(inputData, "Servlet");
+            tempDir = parseParam(inputData, "tempDir");
+            nameFile = parseParam(inputData, "nameFile");
+           uploadDir = parseParam(inputData, "uploadDir");
+            String pathFile = (String) inputData.get("pathFileTarget");
+            String dateFile = (String) inputData.get("dateFileTarget");
+            String tempFilePath = (String) inputData.get("tempFilePath");*/
+           
             Servlet = "http://localhost:8080/NMCLUploadArchivoServlet/uploadFile";
             String pathFile = "PAT_FILE";
             String dateFile = "DATE_FILE";
             String tempFilePath = "PATH_FILE_LOCAL";
-            tempDir = "C:\\destino\\";
-            nameFile= "test901";
+            uploadDir = "C:\\nuevoDestino\\";
+           tempDir = "C:\\destino\\";
+           nameFile= "test901";
             
+            SourceManager.setLibraryPath("C:\\AspriseJTwain.dll");
             Source source = SourceManager.instance().selectSourceUI();
             imprimir(SourceManager.instance().getJTwainDLLVersion());
             source.setUIEnabled(false);
@@ -75,7 +78,7 @@ public class ActionScan extends FgActionAdapter {
             source.saveLastAcquiredImageIntoFile(tempDir + nameFile + ".png");
             tempFile = new File(tempDir + nameFile + ".png");
             SaveImage sv = new SaveImage();
-            sv.enviarImagen(Servlet, tempFile, pathFile, dateFile, tempFilePath);
+            sv.enviarImagen(Servlet, tempFile, pathFile, dateFile, tempFilePath, uploadDir);
 //            tempFile.delete();
             source.close();
         } catch (Exception e) {
@@ -95,13 +98,14 @@ public class ActionScan extends FgActionAdapter {
 
         static final int BUFFER_SIZE = 16384;
 
-        public void enviarImagen(String Servlet, File file, String pathFile, String dateFile, String tempFilePath) throws MalformedURLException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
+        public void enviarImagen(String Servlet, File file, String pathFile, String dateFile, String tempFilePath, String uploadDir) throws MalformedURLException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
             String charset = "UTF-8";
             String requestURL = Servlet;
             String xmlResponse = null;
             imprimir("empieza servlet");
             try {
                 MultipartUtility multipart = new MultipartUtility(requestURL, charset);
+                multipart.addFormField("dirServer", uploadDir);
                 multipart.addFilePart("file1", file);
                 List<String> response = multipart.finish();
 
@@ -120,9 +124,9 @@ public class ActionScan extends FgActionAdapter {
                 String rutaArchivo = rutaList.item(0).getChildNodes().item(0).getNodeValue();
                 imprimir(fechaArchivo + " " + rutaArchivo);
 
-//                getForm().setValue(pathFile, rutaArchivo);
-//                getForm().setValue(dateFile, fechaArchivo);
-//                getForm().setValue(tempFilePath, tempFile.getAbsolutePath());
+                getForm().setValue(pathFile, rutaArchivo);
+                getForm().setValue(dateFile, fechaArchivo);
+                getForm().setValue(tempFilePath, tempFile.getAbsolutePath());
 
             } catch (IOException ex) {
                 System.err.println(ex);
